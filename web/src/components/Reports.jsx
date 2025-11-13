@@ -176,15 +176,34 @@ export default function Reports() {
     });
 
     // Detailed reports table
-    const tableData = filtered.map((r) => [
-      r.id.substring(0, 8) + "...",
-      `${r.userDetails?.firstName || ""} ${r.userDetails?.lastName || ""}`.trim() || "-",
-      getInfrastructureType(r),
-      r.userDetails?.barangay || "-",
-      r.status || "Pending",
-      r.uploadedAt?.toDate().toLocaleDateString() || "-",
-      r.uploadedAt?.toDate().toLocaleTimeString() || "-",
-    ]);
+    const parseDate = (input) => {
+  if (!input) return null;
+
+  if (input.toDate) {
+    // Firestore Timestamp
+    return input.toDate();
+  }
+
+  // If it's already a Date object
+  if (input instanceof Date) return input;
+
+  // Otherwise, try parsing string
+  const parsed = new Date(input);
+  if (isNaN(parsed)) return null; // invalid date
+  return parsed;
+};
+
+// Format date as MM/DD/YYYY (or locale format)
+const formatDate = (input) => {
+  const date = parseDate(input);
+  return date ? date.toLocaleDateString() : "-";
+};
+
+// Format time as hh:mm:ss AM/PM
+const formatTime = (input) => {
+  const date = parseDate(input);
+  return date ? date.toLocaleTimeString() : "-";
+};
 
     autoTable(doc, {
       head: [["ID", "Reporter", "Type", "Barangay", "Status", "Date", "Time"]],
@@ -617,16 +636,18 @@ export default function Reports() {
                      </span>
                     </div>
                     <div>
-                      <span className="text-gray-500">Latitude:</span>
                       <span className="ml-2 font-mono text-xs">
-                        {selectedReport.latitude?.toFixed(6)}
-                      </span>
+  {selectedReport.latitude != null
+    ? Number(selectedReport.latitude).toFixed(6)
+    : "-"}
+</span>
                     </div>
                     <div>
-                      <span className="text-gray-500">Longitude:</span>
                       <span className="ml-2 font-mono text-xs">
-                        {selectedReport.longitude?.toFixed(6)}
-                      </span>
+  {selectedReport.longitude != null
+    ? Number(selectedReport.longitude).toFixed(6)
+    : "-"}
+</span>
                     </div>
                     <a
                       href={`https://www.google.com/maps?q=${selectedReport.latitude},${selectedReport.longitude}`}

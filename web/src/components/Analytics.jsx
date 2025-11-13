@@ -46,6 +46,8 @@ function HeatmapLayer({ points }) {
 
   useEffect(() => {
     if (!map) return;
+
+    // Heatmap
     const heatData = points.map((p) => [p.coords[0], p.coords[1], p.severity / 5]);
     const heat = L.heatLayer(heatData, {
       radius: 50,
@@ -53,11 +55,33 @@ function HeatmapLayer({ points }) {
       maxZoom: 15,
       gradient: { 0.2: "green", 0.5: "orange", 1.0: "red" },
     }).addTo(map);
-    return () => map.removeLayer(heat);
+
+    // Legend
+    const legend = L.control({ position: "bottomright" });
+    legend.onAdd = function () {
+      const div = L.DomUtil.create("div", "info legend");
+      const grades = ["Low", "Moderate", "High", "Very High"];
+      const colors = ["green", "yellow", "orange", "red"];
+      let labels = "<h4>Severity</h4>";
+      grades.forEach((grade, i) => {
+        labels += `
+          <i style="background:${colors[i]}; width:18px; height:18px; display:inline-block; margin-right:6px;"></i>
+          ${grade}<br>`;
+      });
+      div.innerHTML = labels;
+      return div;
+    };
+    legend.addTo(map);
+
+    return () => {
+      map.removeLayer(heat);
+      legend.remove();
+    };
   }, [map, points]);
 
   return null;
 }
+
 
 export default function Analytics() {
   // ✅ Keep your full areas array
@@ -193,7 +217,7 @@ export default function Analytics() {
 
       {/* Heatmap */}
       <div className="bg-white p-6 rounded-xl shadow">
-        <h2 className="text-lg font-semibold mb-4">Heatmap of Reported Hazards</h2>
+        <h2 className="text-lg font-semibold mb-4">Heatmap of Hazardous Areas</h2>
         <MapContainer
           center={[14.58, 121.05]}
           zoom={13}
