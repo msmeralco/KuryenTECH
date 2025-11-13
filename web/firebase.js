@@ -1,19 +1,24 @@
+
 import { initializeApp } from "firebase/app";
-import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore"
+
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBiM_ZoQMxNMjUMYbJV-pStnCVZKfuJoHk",
-  authDomain: "gardian-2d7e5.firebaseapp.com",
-  projectId: "gardian-2d7e5",
-  storageBucket: "gardian-2d7e5.firebasestorage.app",
-  messagingSenderId: "976234026245",
-  appId: "1:976234026245:web:82b8cfd50356acc15ed36c",
+  apiKey: "AIzaSyALukVSn70obzS6-5aAdktVnZxhO4h2hsE",
+  authDomain: "kuryentech-9a713.firebaseapp.com",
+  projectId: "kuryentech-9a713",
+  storageBucket: "kuryentech-9a713.firebasestorage.app",
+  messagingSenderId: "685928959485",
+  appId: "1:685928959485:web:9a1318d49a2c1d65d69d94",
+  measurementId: "G-RSBC231VER"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-setPersistence(auth, browserLocalPersistence);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+const analytics = getAnalytics(app);
+const auth = getAuth(app); 
+const db = getFirestore(app);
+
+export { app, analytics, auth, db };

@@ -2,7 +2,7 @@ import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { collectionGroup, onSnapshot, query, orderBy, limit, getDoc, doc } from "firebase/firestore";
-import { useUser } from "./context/UserContext.jsx";
+import { useUser } from "../src/context/Context.jsx";
 
 // Components
 import Sidebar from "./components/Sidebar";

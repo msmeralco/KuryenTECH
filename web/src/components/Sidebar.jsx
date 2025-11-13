@@ -32,7 +32,7 @@ export default function Sidebar() {
         <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
           KuryenTECH
         </h1>
-        <p className="text-xs text-gray-400 mt-1"></p>
+        <p className="text-xs text-gray-400 mt-1">Infrastructure Management</p>
       </div>
 
       {/* User Profile Section */}
