@@ -1,6 +1,8 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaHome, FaChartBar, FaChartLine, FaComments, FaSignOutAlt, FaUserCircle, FaUser } from "react-icons/fa";
 import { auth } from "../../firebase";
+import KuryenTECHLogo from "../assets/KuryenTECHLogo2.png";
+  
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -22,24 +24,35 @@ export default function Sidebar() {
     { path: "/reports", icon: FaChartBar, label: "Reports" },
     { path: "/analytics", icon: FaChartLine, label: "Analytics" },
     { path: "/usermanagement", icon: FaUser, label: "User Management" },
-    { path: "/feedback", icon: FaComments, label: "Citizen Feedback" },
+    //{ path: "/feedback", icon: FaComments, label: "Citizen Feedback" },
   ];
 
   return (
-    <aside className="w-64 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white flex flex-col shadow-2xl">
+    <aside className="w-64 bg-gradient-to-b from-black via-gray-900 to-black text-white flex flex-col shadow-2xl">
       {/* Logo Section */}
-      <div className="p-6 border-b border-gray-700">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-          KuryenTECH
-        </h1>
-        <p className="text-xs text-gray-400 mt-1">Infrastructure Management</p>
+      <div className="p-6 border-b border-orange-600/30">
+        <div className="flex items-center gap-3 mb-2">
+          {/* Logo */}
+          <img 
+            src={KuryenTECHLogo} 
+            alt="KuryenTECH Logo" 
+            className="w-10 h-10"
+          />
+          {/* Logo Name */}
+<h1 className="text-2xl font-bold">
+  <span className="text-white">Kuryen</span>
+  <span className="text-orange-500">TECH</span>
+</h1>
+<p className="text-xs text-gray-400 ml-13">Infrastructure Management</p>
+        </div>
+        <p className="text-xs text-gray-400 ml-13">Infrastructure Management</p>
       </div>
 
       {/* User Profile Section */}
-      <div className="p-6 flex items-center space-x-3 border-b border-gray-700 bg-gray-800/50">
+      <div className="p-6 flex items-center space-x-3 border-b border-orange-600/30 bg-orange-900/10">
         <div className="relative">
-          <FaUserCircle className="w-12 h-12 text-blue-400" />
-          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-800"></div>
+          <FaUserCircle className="w-12 h-12 text-orange-500" />
+          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-black"></div>
         </div>
         <div className="flex flex-col">
           <span className="font-semibold text-white">Admin User</span>
@@ -59,11 +72,11 @@ export default function Sidebar() {
               to={item.path}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
                 active
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-600/50"
-                  : "text-gray-300 hover:bg-gray-700/50 hover:text-white"
+                  ? "bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-lg shadow-orange-600/50"
+                  : "text-gray-300 hover:bg-orange-900/30 hover:text-white"
               }`}
             >
-              <Icon className={`text-lg ${active ? "text-white" : "text-gray-400 group-hover:text-blue-400"} transition-colors`} />
+              <Icon className={`text-lg ${active ? "text-white" : "text-gray-400 group-hover:text-orange-400"} transition-colors`} />
               <span className="font-medium">{item.label}</span>
               {active && (
                 <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white"></div>
@@ -74,7 +87,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Logout Button */}
-      <div className="p-4 border-t border-gray-700">
+      <div className="p-4 border-t border-orange-600/30">
         <button
           onClick={handleLogout}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-red-600/20 hover:text-red-400 transition-all duration-200 group"

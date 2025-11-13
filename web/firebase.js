@@ -3,13 +3,14 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore"
+import { getStorage } from "firebase/storage"; 
 
 
 const firebaseConfig = {
   apiKey: "AIzaSyALukVSn70obzS6-5aAdktVnZxhO4h2hsE",
   authDomain: "kuryentech-9a713.firebaseapp.com",
   projectId: "kuryentech-9a713",
-  storageBucket: "kuryentech-9a713.firebasestorage.app",
+  storageBucket: "kuryentech-9a713.appspot.com",
   messagingSenderId: "685928959485",
   appId: "1:685928959485:web:9a1318d49a2c1d65d69d94",
   measurementId: "G-RSBC231VER"
@@ -20,5 +21,6 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app); 
 const db = getFirestore(app);
+const storage = getStorage(app); 
 
-export { app, analytics, auth, db };
+export { app, analytics, auth, db, storage };

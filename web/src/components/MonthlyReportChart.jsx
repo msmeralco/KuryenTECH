@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -13,280 +13,279 @@ import {
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 export default function MonthlyReportChart() {
-  const barangays = [
-    "San Andres",
-    "Santo Domingo",
-    "San Isidro",
-    "San Juan",
-    "Santo Niño",
-    "San Roque",
-    "Santa Rosa"
+  // Configuration
+  const cities = [
+    "Caloocan City",
+    "Makati City",
+    "Malabon City",
+    "Mandaluyong City",
+    "Manila City",
+    "Marikina City",
+    "Pasig City",
   ];
 
   const months = [
-    "January", "February", "March", "April", "May", "June",
+    "All", "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
 
-  // Comprehensive data for all 7 barangays across 12 months
-  const reportData = {
-    January: {
-      drainage: [120, 180, 90, 200, 150, 170, 140],
-      pothole: [140, 160, 130, 220, 210, 190, 165],
-      surface: [100, 140, 120, 180, 190, 160, 145],
-    },
-    February: {
-      drainage: [100, 160, 80, 190, 140, 155, 125],
-      pothole: [120, 150, 110, 200, 180, 170, 145],
-      surface: [90, 120, 100, 170, 160, 140, 130],
-    },
-    March: {
-      drainage: [130, 170, 100, 210, 160, 180, 155],
-      pothole: [150, 165, 120, 230, 200, 185, 170],
-      surface: [110, 130, 110, 190, 180, 150, 140],
-    },
-    April: {
-      drainage: [115, 175, 95, 205, 145, 165, 135],
-      pothole: [135, 155, 125, 215, 195, 175, 160],
-      surface: [95, 125, 105, 175, 170, 145, 135],
-    },
-    May: {
-      drainage: [125, 185, 105, 215, 155, 175, 145],
-      pothole: [145, 170, 135, 225, 205, 195, 175],
-      surface: [105, 135, 115, 185, 180, 155, 150],
-    },
-    June: {
-      drainage: [110, 165, 85, 195, 135, 160, 130],
-      pothole: [130, 145, 115, 205, 185, 165, 150],
-      surface: [85, 115, 95, 165, 155, 135, 125],
-    },
-    July: {
-      drainage: [135, 190, 110, 220, 165, 185, 160],
-      pothole: [155, 175, 140, 235, 215, 200, 180],
-      surface: [115, 145, 125, 195, 190, 165, 155],
-    },
-    August: {
-      drainage: [140, 195, 115, 225, 170, 190, 165],
-      pothole: [160, 180, 145, 240, 220, 205, 185],
-      surface: [120, 150, 130, 200, 195, 170, 160],
-    },
-    September: {
-      drainage: [105, 155, 75, 185, 125, 150, 120],
-      pothole: [125, 140, 105, 195, 175, 160, 145],
-      surface: [80, 110, 90, 160, 150, 130, 120],
-    },
-    October: {
-      drainage: [145, 200, 120, 230, 175, 195, 170],
-      pothole: [165, 185, 150, 245, 225, 210, 190],
-      surface: [125, 155, 135, 205, 200, 175, 165],
-    },
-    November: {
-      drainage: [150, 205, 125, 235, 180, 200, 175],
-      pothole: [170, 190, 155, 250, 230, 215, 195],
-      surface: [130, 160, 140, 210, 205, 180, 170],
-    },
-    December: {
-      drainage: [155, 210, 130, 240, 185, 205, 180],
-      pothole: [175, 195, 160, 255, 235, 220, 200],
-      surface: [135, 165, 145, 215, 210, 185, 175],
-    },
-  };
+  const categories = [
+    "Exposed Wires",
+    "Illegal Taps",
+    "Vegetation",
+    "Damaged Poles",
+    "Other",
+  ];
 
-  const [selectedMonth, setSelectedMonth] = useState("January");
-  const [selectedBarangays, setSelectedBarangays] = useState(barangays);
+    const colors = [
+    "#0A0903", // Dark
+    "#FF5100", // Orange
+    "#FF8200", // Amber
+    "#FFC929", // Yellow
+    "#FFF4D5", // Cream
+  ];
 
-  const toggleBarangay = (barangay) => {
-    setSelectedBarangays(prev =>
-      prev.includes(barangay)
-        ? prev.filter(b => b !== barangay)
-        : [...prev, barangay]
+  // State
+  const [selectedMonth, setSelectedMonth] = useState("All");
+  const [selectedCities, setSelectedCities] = useState(cities);
+
+  // Generate sample data
+  const reportData = useMemo(() => {
+    const data = {};
+    months.slice(1).forEach((month) => {
+      data[month] = {};
+      categories.forEach((cat) => {
+        data[month][cat] = cities.map(() =>
+          Math.floor(Math.random() * 150) + 50
+        );
+      });
+    });
+    return data;
+  }, []);
+
+  // Handlers
+  const toggleCity = (city) => {
+    setSelectedCities((prev) =>
+      prev.includes(city)
+        ? prev.filter((c) => c !== city)
+        : [...prev, city].sort((a, b) => cities.indexOf(a) - cities.indexOf(b))
     );
   };
 
-  const selectAll = () => setSelectedBarangays(barangays);
-  const clearAll = () => setSelectedBarangays([]);
+  const selectAll = () => setSelectedCities(cities);
+  const clearAll = () => setSelectedCities([]);
 
-  // Filter data based on selected barangays
-  const getFilteredData = (dataArray) => {
-    return selectedBarangays.map(barangay => {
-      const index = barangays.indexOf(barangay);
-      return dataArray[index];
+  // Chart data computation
+  const chartData = useMemo(() => {
+    const getFilteredData = (dataArray) => {
+      return selectedCities.map((city) => {
+        const index = cities.indexOf(city);
+        return dataArray[index];
+      });
+    };
+
+    const datasets = categories.map((category, idx) => {
+      let monthlyValues;
+
+      if (selectedMonth === "All") {
+        monthlyValues = cities.map((_, i) => {
+          const sum = months.slice(1).reduce((acc, month) => {
+            return acc + reportData[month][category][i];
+          }, 0);
+          return Math.round(sum / 12);
+        });
+      } else {
+        monthlyValues = reportData[selectedMonth][category];
+      }
+
+      const filteredValues = getFilteredData(monthlyValues);
+
+      return {
+        label: category,
+        data: filteredValues,
+        backgroundColor: colors[idx],
+        borderColor: colors[idx].replace("0.85", "1"),
+        borderWidth: 1,
+        borderRadius: 4,
+      };
     });
-  };
 
-  const drainageReports = getFilteredData(reportData[selectedMonth].drainage);
-  const potholeReports = getFilteredData(reportData[selectedMonth].pothole);
-  const surfaceReports = getFilteredData(reportData[selectedMonth].surface);
+    return {
+      labels: selectedCities,
+      datasets,
+    };
+  }, [selectedMonth, selectedCities, reportData]);
 
-  const totalReports = drainageReports.map(
-    (val, i) => val + potholeReports[i] + surfaceReports[i]
-  );
-
-  const data = {
-    labels: selectedBarangays,
-    datasets: [
-      {
-        label: "Drainage",
-        data: drainageReports,
-        backgroundColor: "rgba(28, 133, 168, 0.8)",
-        borderColor: "rgba(28, 133, 168, 1)",
-        borderWidth: 1,
-      },
-      {
-        label: "Pothole",
-        data: potholeReports,
-        backgroundColor: "rgba(84, 110, 122, 0.8)",
-        borderColor: "rgba(84, 110, 122, 1)",
-        borderWidth: 1,
-      },
-      {
-        label: "Surface",
-        data: surfaceReports,
-        backgroundColor: "rgba(158, 157, 36, 0.8)",
-        borderColor: "rgba(158, 157, 36, 1)",
-        borderWidth: 1,
-      },
-      {
-        label: "Total Reports",
-        data: totalReports,
-        backgroundColor: "rgba(59, 130, 246, 0.8)",
-        borderColor: "rgba(59, 130, 246, 1)",
-        borderWidth: 1,
-      },
-    ],
-  };
-
+  // Chart options
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
     plugins: {
-      legend: { 
+      legend: {
         position: "top",
         labels: {
-          padding: 15,
-          font: {
-            size: 12
-          }
-        }
-      },
-      title: { 
-        display: true, 
-        text: `Barangay Reports - ${selectedMonth}`,
-        font: {
-          size: 16,
-          weight: 'bold'
+          padding: 12,
+          font: { size: 11, family: "'Inter', sans-serif" },
+          usePointStyle: true,
+          pointStyle: 'circle',
         },
-        padding: 20
+      },
+      title: {
+        display: true,
+        text: selectedMonth === "All"
+          ? "Annual Average Report by City"
+          : `${selectedMonth} Report by City`,
+        font: { size: 18, weight: "600", family: "'Inter', sans-serif" },
+        padding: { top: 10, bottom: 20 },
+        color: '#1f2937',
       },
       tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: "rgba(17, 24, 39, 0.95)",
         padding: 12,
-        titleFont: {
-          size: 14
-        },
-        bodyFont: {
-          size: 13
-        }
-      }
-    },
-    scales: {
-      x: { 
-        stacked: false,
-        grid: {
-          display: false
-        },
-        ticks: {
-          font: {
-            size: 11
+        titleFont: { size: 13, weight: '600' },
+        bodyFont: { size: 12 },
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderWidth: 1,
+        cornerRadius: 8,
+        displayColors: true,
+        callbacks: {
+          label: function(context) {
+            return `${context.dataset.label}: ${context.parsed.y} reports`;
           }
         }
       },
-      y: { 
-        stacked: false, 
-        beginAtZero: true,
-        grid: {
-          color: 'rgba(0, 0, 0, 0.05)'
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { 
+          font: { size: 11, family: "'Inter', sans-serif" },
+          color: '#6b7280',
         },
-        ticks: {
-          font: {
-            size: 11
-          }
-        }
+        border: { display: false },
+      },
+      y: {
+        beginAtZero: true,
+        grid: { 
+          color: "rgba(0, 0, 0, 0.04)",
+          drawBorder: false,
+        },
+        ticks: { 
+          font: { size: 11, family: "'Inter', sans-serif" },
+          color: '#6b7280',
+          padding: 8,
+        },
+        border: { display: false },
       },
     },
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-lg">
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
-        <h2 className="text-xl font-bold text-gray-800">Monthly Report Chart</h2>
-        
-        <div className="flex items-center gap-3">
-          <label className="text-sm font-medium text-gray-600">Month:</label>
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm"
-          >
-            {months.map((month) => (
-              <option key={month} value={month}>
-                {month}
-              </option>
-            ))}
-          </select>
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+      {/* Header Section */}
+      <div className="border-b border-gray-100 px-6 py-5">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Monthly Report Dashboard</h2>
+            <p className="text-sm text-gray-500 mt-1">Infrastructure issue reports across cities</p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">Period:</label>
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm transition-all hover:border-gray-300"
+            >
+              {months.map((month) => (
+                <option key={month} value={month}>
+                  {month}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Barangay Filter */}
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-gray-700">Filter by Barangay</h3>
+      {/* Filter Section */}
+      <div className="px-6 py-5 bg-gray-50 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            <h3 className="text-sm font-semibold text-gray-900">Filter by City</h3>
+            <span className="text-xs font-medium text-gray-500 bg-white px-2 py-1 rounded-full border border-gray-200">
+              {selectedCities.length} of {cities.length}
+            </span>
+          </div>
+          
           <div className="flex gap-2">
             <button
               onClick={selectAll}
-              className="text-xs px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              className="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
             >
               Select All
             </button>
             <button
               onClick={clearAll}
-              className="text-xs px-3 py-1 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+              className="text-xs px-3 py-1.5 bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium border border-gray-200"
             >
               Clear All
             </button>
           </div>
         </div>
-        
+
         <div className="flex flex-wrap gap-2">
-          {barangays.map((barangay) => (
-            <button
-              key={barangay}
-              onClick={() => toggleBarangay(barangay)}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                selectedBarangays.includes(barangay)
-                  ? 'bg-blue-500 text-white shadow-md'
-                  : 'bg-white text-gray-600 border border-gray-300 hover:border-blue-300'
-              }`}
-            >
-              {barangay}
-            </button>
-          ))}
+          {cities.map((city) => {
+            const isSelected = selectedCities.includes(city);
+            return (
+              <button
+                key={city}
+                onClick={() => toggleCity(city)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  isSelected
+                    ? "bg-blue-600 text-white shadow-md hover:bg-blue-700"
+                    : "bg-white text-gray-700 border border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+                }`}
+              >
+                {city}
+              </button>
+            );
+          })}
         </div>
-        
-        {selectedBarangays.length === 0 && (
-          <p className="text-sm text-red-500 mt-3">Please select at least one barangay to display data.</p>
+
+        {selectedCities.length === 0 && (
+          <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-lg flex items-center gap-2">
+            <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-sm text-red-700 font-medium">
+              Please select at least one city to display data
+            </p>
+          </div>
         )}
       </div>
 
-      {/* Chart */}
-      <div className="h-96">
-        {selectedBarangays.length > 0 ? (
-          <Bar data={data} options={options} />
-        ) : (
-          <div className="flex items-center justify-center h-full text-gray-400">
-            <p>No barangays selected</p>
-          </div>
-        )}
+      {/* Chart Section */}
+      <div className="p-6">
+        <div className="h-96 relative">
+          {selectedCities.length > 0 ? (
+            <Bar data={chartData} options={options} />
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+              <svg className="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <p className="text-base font-medium">No cities selected</p>
+              <p className="text-sm text-gray-400 mt-1">Select cities above to view report data</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -199,7 +199,7 @@ export default function Topbar() {
   }, []);
 
   return (
-    <header className="h-16 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white flex items-center justify-between px-6 shadow-lg border-b border-gray-700">
+      <header className="h-16 bg-gradient-to-r from-black via-gray-900 to-black text-white flex items-center justify-between px-6 shadow-2xl border-b border-orange-600/30">
       <div className="flex-1 max-w-xl"></div>
 
       <div className="flex items-center space-x-4">
@@ -207,7 +207,7 @@ export default function Topbar() {
         <div className="relative" ref={notifRef}>
           <button
             onClick={toggleNotif}
-            className="relative p-2 rounded-lg hover:bg-gray-700/50 transition-all duration-200 group"
+            className="relative p-2 rounded-lg hover:bg-orange-900/30 transition-all duration-200 group"
           >
             <FaBell
               className={`text-xl transition-colors ${
@@ -215,132 +215,127 @@ export default function Topbar() {
               }`}
             />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 flex items-center justify-center w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full border-2 border-gray-900 animate-pulse">
+              <span className="absolute top-1 right-1 flex items-center justify-center w-5 h-5 bg-orange-500 text-white text-xs font-bold rounded-full border-2 border-black animate-pulse">
                 {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}
           </button>
 
           {isNotifOpen && (
-            <div className="absolute right-0 mt-3 w-[420px] bg-white border border-gray-200 rounded-lg shadow-2xl z-50 overflow-hidden animate-fadeIn">
-              {/* Header */}
-              <div className="p-4 border-b bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold text-lg">Notifications</h3>
-                    <p className="text-xs text-blue-100 mt-0.5">
-                      {unreadCount} unread • {notifications.length} total
-                    </p>
-                  </div>
-                  {unreadCount > 0 && (
-                    <button
-                      onClick={markAllAsRead}
-                      className="text-xs bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-full transition-colors"
-                    >
-                      Mark all read
-                    </button>
+  <div className="absolute right-0 mt-3 w-[420px] bg-gray-900 border border-orange-600/50 rounded-lg shadow-2xl z-50 overflow-hidden animate-fadeIn">
+    {/* Header */}
+    <div className="p-4 border-b border-orange-600/30 bg-gradient-to-r from-orange-500 to-orange-400 text-white">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="font-semibold text-lg">Hazard Reports</h3>
+          <p className="text-xs text-orange-100 mt-0.5">
+            {unreadCount} unread • {notifications.length} total
+          </p>
+        </div>
+        {unreadCount > 0 && (
+          <button
+            onClick={markAllAsRead}
+            className="text-xs bg-orange-600 hover:bg-orange-500 px-3 py-1 rounded-full transition-colors"
+          >
+            Mark all read
+          </button>
+        )}
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="flex gap-2 mt-3">
+        {["all", "unread", "pending", "resolved"].map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`text-xs px-3 py-1 rounded-full transition-colors ${
+              filter === f
+                ? "bg-orange-500 text-white font-medium"
+                : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+            }`}
+          >
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Notifications List */}
+    <ul className="max-h-[500px] overflow-y-auto">
+      {filteredNotifications.length > 0 ? (
+        filteredNotifications.map((n) => (
+          <li
+            key={n.id}
+            onClick={() => handleNotificationClick(n)}
+            className={`px-4 py-3 hover:bg-gray-800 border-b border-gray-700 transition-colors cursor-pointer ${
+              !n.read ? getSeverityColor(n.severity) : ""
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-1">
+                {getSeverityIcon(n.severity, n.issueIcon)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <p
+                    className={`text-sm ${
+                      !n.read ? "font-semibold text-white" : "text-gray-300"
+                    }`}
+                  >
+                    {n.message}
+                  </p>
+                  {!n.read && (
+                    <div className="w-2 h-2 bg-orange-500 rounded-full flex-shrink-0"></div>
                   )}
                 </div>
 
-                {/* Filter Tabs */}
-                <div className="flex gap-2 mt-3">
-                  {["all", "unread", "pending", "resolved"].map((f) => (
-                    <button
-                      key={f}
-                      onClick={() => setFilter(f)}
-                      className={`text-xs px-3 py-1 rounded-full transition-colors ${
-                        filter === f
-                          ? "bg-white text-blue-600 font-medium"
-                          : "bg-blue-500/30 text-white hover:bg-blue-500/50"
-                      }`}
-                    >
-                      {f.charAt(0).toUpperCase() + f.slice(1)}
-                    </button>
-                  ))}
+                {/* Reporter Info & Time */}
+                <div className="flex items-center gap-3 text-xs text-gray-400 mt-1">
+                  <span className="flex items-center gap-1">
+                    <FaUserCircle className="text-gray-500" />
+                    {n.userDetails?.firstName} {n.userDetails?.lastName}
+                  </span>
+                  <span>•</span>
+                  <span>{getTimeAgo(n.uploadedAt)}</span>
+                </div>
+
+                {/* Status & Severity Badges */}
+                <div className="flex items-center gap-2 mt-2">
+                  {getStatusBadge(n.status)}
+                  {n.severity === "high" && (
+                    <span className="text-xs bg-red-700 text-white px-2 py-0.5 rounded font-medium">
+                      High Priority
+                    </span>
+                  )}
+                  <span className="text-xs bg-gray-700 text-orange-400 px-2 py-0.5 rounded">
+                    {n.issueType}
+                  </span>
                 </div>
               </div>
-
-              {/* Notifications List */}
-              <ul className="max-h-[500px] overflow-y-auto">
-                {filteredNotifications.length > 0 ? (
-                  filteredNotifications.map((n) => (
-                    <li
-                      key={n.id}
-                      onClick={() => handleNotificationClick(n)}
-                      className={`px-4 py-3 hover:bg-gray-50 border-b border-gray-100 transition-colors cursor-pointer ${
-                        !n.read ? getSeverityColor(n.severity) : ""
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 mt-1">
-                          {getSeverityIcon(n.severity)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-2 mb-1">
-                            <p
-                              className={`text-sm ${
-                                !n.read ? "font-semibold text-gray-900" : "text-gray-700"
-                              }`}
-                            >
-                              {n.message}
-                            </p>
-                            {!n.read && (
-                              <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
-                            )}
-                          </div>
-
-                          {/* Additional Details */}
-                          <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
-                            <span className="flex items-center gap-1">
-                              <FaUserCircle className="text-gray-400" />
-                              {n.userDetails?.firstName} {n.userDetails?.lastName}
-                            </span>
-                            <span>•</span>
-                            <span>{getTimeAgo(n.uploadedAt)}</span>
-                          </div>
-
-                          {/* Severity Badge & Info */}
-                          <div className="flex items-center gap-2 mt-2">
-                            {n.severity === "high" && (
-                              <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded font-medium">
-                                High Priority
-                              </span>
-                            )}
-                            {n.drainageStatus === "Clogged" && (
-                              <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded font-medium">
-                                Clogged
-                              </span>
-                            )}
-                            {n.obstructionCount > 0 && (
-                              <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded">
-                                {n.obstructionCount} obstruction{n.obstructionCount > 1 ? "s" : ""}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  ))
-                ) : (
-                  <li className="px-4 py-8 text-center text-gray-500">
-                    <FaBell className="mx-auto text-3xl text-gray-300 mb-2" />
-                    <p className="text-sm">No notifications found</p>
-                  </li>
-                )}
-              </ul>
-
-              {/* Footer */}
-              <div className="p-3 text-center border-t bg-gray-50">
-                <Link
-                  to="/reports"
-                  onClick={() => setIsNotifOpen(false)}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline"
-                >
-                  View all reports →
-                </Link>
-              </div>
             </div>
-          )}
+          </li>
+        ))
+      ) : (
+        <li className="px-4 py-8 text-center text-gray-400">
+          <FaBell className="mx-auto text-3xl text-gray-500 mb-2" />
+          <p className="text-sm">No notifications found</p>
+        </li>
+      )}
+    </ul>
+
+    {/* Footer */}
+    <div className="p-3 text-center border-t border-orange-600/30 bg-gray-800">
+      <Link
+        to="/reports"
+        onClick={() => setIsNotifOpen(false)}
+        className="text-sm text-orange-500 hover:text-orange-400 font-medium hover:underline"
+      >
+        View all reports →
+      </Link>
+    </div>
+  </div>
+)}
+
         </div>
 
         {/* Divider */}
@@ -349,8 +344,8 @@ export default function Topbar() {
         {/* Profile */}
         <div className="flex items-center space-x-3 relative" ref={profileRef}>
           <div className="text-right hidden sm:block">
-            <p className="text-sm font-medium text-white">Admin User</p>
-            <p className="text-xs text-gray-400">Administrator</p>
+            <p className="font-semibold">Admin User</p>
+            <p className="text-xs text-orange-100 mt-0.5">Administrator</p>
           </div>
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -361,34 +356,38 @@ export default function Topbar() {
           </button>
 
           {isProfileOpen && (
-            <div className="absolute top-14 right-0 w-56 bg-white rounded-lg shadow-2xl text-gray-800 border border-gray-200 overflow-hidden animate-fadeIn z-50">
-              <div className="p-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-                <p className="font-semibold">Admin User</p>
-                <p className="text-xs text-blue-100 mt-0.5">admin@gmail.com</p>
-              </div>
-              <ul className="py-2">
-                <li>
-                  <Link
-                    to="/profile"
-                    className="flex items-center px-4 py-2.5 hover:bg-gray-50 transition-colors text-sm"
-                  >
-                    <FaUserCircle className="mr-3 text-gray-400" />
-                    My Profile
-                  </Link>
-                </li>
-                <li className="border-t border-gray-100 mt-2 pt-2">
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 text-sm font-medium"
-                  >
-                    Log Out
-                  </button>
-                </li>
-              </ul>
-            </div>
-          )}
+  <div className="absolute top-14 right-0 w-56 bg-black rounded-lg shadow-2xl text-white border border-orange-600 overflow-hidden animate-fadeIn z-50">
+    {/* Header */}
+    <div className="p-4 bg-gradient-to-r from-orange-500 to-orange-400 text-white">
+      <p className="font-semibold">Admin User</p>
+      <p className="text-xs text-orange-100 mt-0.5">admin@gmail.com</p>
+    </div>
+
+    {/* Options */}
+    <ul className="py-2 bg-black text-white">
+      <li>
+        <Link
+          to="/profile"
+          className="flex items-center px-4 py-2.5 hover:bg-orange-900/30 transition-colors text-sm"
+        >
+          <FaUserCircle className="mr-3 text-orange-400" />
+          My Profile
+        </Link>
+      </li>
+      <li className="border-t border-orange-600 mt-2 pt-2">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center px-4 py-2.5 hover:bg-red-600/20 transition-colors text-red-400 text-sm font-medium"
+        >
+          Log Out
+        </button>
+      </li>
+    </ul>
+  </div>
+)}
+
         </div>
       </div>
     </header>
   );
-}
+} 
