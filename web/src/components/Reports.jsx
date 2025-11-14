@@ -672,21 +672,15 @@ const formatTime = (input) => {
                       </span>
                     </div>
                     <div>
-                      <span className="text-gray-500">Drainage Status:</span>
-                      <span className={`ml-2 font-bold ${selectedReport.yolo?.status === "Clogged" ? "text-red-600" : "text-green-600"}`}>
+                      <span className="text-gray-500">Status:</span>
+                      <span className={`ml-2 font-bold ${selectedReport.yolo?.status === "" ? "text-red-600" : "text-green-600"}`}>
                         {selectedReport.yolo?.status || "-"}
                       </span>
                     </div>
                     <div>
-                      <span className="text-gray-500">Drainages Detected:</span>
+                      <span className="text-gray-500">Hazards Detected:</span>
                       <span className="ml-2 font-medium">
-                        {selectedReport.yolo?.drainage_count || 0}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Obstructions Found:</span>
-                      <span className="ml-2 font-medium text-orange-600">
-                        {selectedReport.yolo?.obstruction_count || 0}
+                        {selectedReport.yolo?.count || 0}
                       </span>
                     </div>
                   </div>

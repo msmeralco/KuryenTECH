@@ -208,7 +208,7 @@ export default function Topbar() {
               <div className="p-4 border-b border-orange-600/30 bg-gradient-to-r from-orange-500 to-orange-400 text-white">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-semibold text-lg">Infrastructure Reports</h3>
+                    <h3 className="font-semibold text-lg">Hazardous Reports</h3>
                     <p className="text-xs text-orange-100 mt-0.5">
                       {unreadCount} unread • {notifications.length} total
                     </p>
@@ -246,7 +246,7 @@ export default function Topbar() {
                     <li
                       key={n.id}
                       onClick={() => handleNotificationClick(n)}
-                      className={`px-4 py-3 hover:bg-gray-800 border-b border-gray-700 transition-colors cursor-pointer ${
+                      className={`px-4 py-3 bg-gray-800 border-b ${
                         !n.read ? getSeverityColor(n.severity) : ""
                       }`}
                     >
